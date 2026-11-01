@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel Atlas Gallery</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#f5f4f1;--ink:#1c1d22;--mute:#6b6d76;--line:#dcdad4;--accent:#2d4bd6;--card:#fff;--shadow:0 10px 30px rgba(20,20,40,.18);
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171b;--ink:#eeeef1;--mute:#9a9ca6;--line:#2c2e35;--accent:#8ea2ff;--card:#202228;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171b;--ink:#eeeef1;--mute:#9a9ca6;--line:#2c2e35;--accent:#8ea2ff;--card:#202228;--shadow:0 10px 30px rgba(0,0,0,.5);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+header{max-width:1200px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,4vw,32px) 12px}
+h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1;margin:0 0 10px}
+header p{margin:0;color:var(--mute);max-width:52ch}
+.bar{max-width:1200px;margin:0 auto;padding:12px clamp(16px,4vw,32px);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font:inherit;font-size:.92rem;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:background .25s,color .25s,border-color .25s,transform .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#101322}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#101322}}
+.count{margin-left:auto;color:var(--mute);font-size:.9rem}
+.grid{max-width:1200px;margin:0 auto;padding:8px clamp(16px,4vw,32px) 56px;display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));grid-auto-rows:150px;grid-auto-flow:dense}
+.item{position:relative;border:0;padding:0;border-radius:14px;overflow:hidden;cursor:pointer;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:opacity .35s,transform .35s,box-shadow .3s;grid-row:span 2}
+.item.tall{grid-row:span 3}.item.wide{grid-column:span 2}
+.item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.item::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent 55%);opacity:0;transition:opacity .3s}
+.item .cap{position:absolute;left:14px;right:14px;bottom:12px;z-index:1;color:#fff;text-align:left;transform:translateY(10px);opacity:0;transition:transform .3s,opacity .3s}
+.item .cap b{display:block;font-weight:600}.item .cap small{opacity:.8}
+.item:hover,.item:focus-visible{box-shadow:var(--shadow);transform:translateY(-3px)}
+.item:hover img,.item:focus-visible img{transform:scale(1.08)}
+.item:hover::after,.item:focus-visible::after,.item:hover .cap,.item:focus-visible .cap{opacity:1;transform:none}
+.item:focus-visible,.chip:focus-visible,.lb button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.item.hide{opacity:0;transform:scale(.92);pointer-events:none}
+.item.gone{display:none}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(10,11,16,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px));opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.lb.open{opacity:1;visibility:visible}
+.lb figure{margin:0;max-width:min(1000px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;min-height:0}
+.lb img{max-width:100%;max-height:calc(100vh - 190px);border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6);transition:opacity .25s,transform .25s;touch-action:pan-y}
+.lb img.swap{opacity:0;transform:scale(.97)}
+.lb figcaption{color:#e8e8ee;margin-top:14px;text-align:center}
+.lb figcaption small{display:block;color:#9a9ca6}
+.lb button{position:absolute;border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:1.5rem;width:46px;height:46px;border-radius:50%;cursor:pointer;transition:background .2s,transform .2s;display:grid;place-items:center}
+.lb button:hover{background:rgba(255,255,255,.28);transform:scale(1.08)}
+.lb .x{top:calc(12px + env(safe-area-inset-top,0px));right:14px}
+.lb .prev{left:14px;top:50%;margin-top:-23px}.lb .next{right:14px;top:50%;margin-top:-23px}
+.lb .num{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));left:18px;color:#c9cad3;font-size:.9rem}
+@media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:120px;gap:10px}.item.wide{grid-column:span 2}.lb .prev,.lb .next{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0}.lb .prev{left:18px}.lb .next{right:18px}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header>
+<h1>Pixel Atlas</h1>
+<p>A small gallery of generated artwork. Filter by category, click any image to open it, then use the arrows or your keyboard to move through the set.</p>
+</header>
+<div class="bar" id="bar" role="group" aria-label="Filter by category"></div>
+<main class="grid" id="grid"></main>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+<span class="num" id="num"></span>
+<button class="x" id="x" aria-label="Close viewer">&times;</button>
+<button class="prev" id="prev" aria-label="Previous image">&#8249;</button>
+<figure><img id="big" alt=""><figcaption id="cap"></figcaption></figure>
+<button class="next" id="next" aria-label="Next image">&#8250;</button>
+</div>
+
+<script>
+// ---- Generated artwork (inline SVG, no external images) ----
+function rng(s){return function(){s=(s*16807)%2147483647;return (s-1)/2147483646}}
+function uri(svg){return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg)}
+function sky(id,a,b){return '<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient></defs><rect width="800" height="600" fill="url(#'+id+')"/>'}
+function mountains(seed,a,b,sun,layers){
+  var r=rng(seed),s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">'+sky('g',a,b)+'<circle cx="'+(150+r()*500)+'" cy="'+(120+r()*80)+'" r="'+(40+r()*30)+'" fill="'+sun+'" opacity=".9"/>';
+  layers.forEach(function(c,i){var y=260+i*85,p='M0 600 L0 '+y;for(var x=0;x<=800;x+=60){p+=' L'+x+' '+(y-r()*(150-i*30))}
+    s+='<path d="'+p+' L800 600Z" fill="'+c+'"/>'});
+  return uri(s+'</svg>')}
+function waves(seed,a,b,cols){
+  var r=rng(seed),s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">'+sky('g',a,b);
+  cols.forEach(function(c,i){var y=250+i*70,amp=20+r()*25,p='M0 '+y;for(var x=0;x<=800;x+=100){p+=' Q'+(x+50)+' '+(y+(i%2?amp:-amp))+' '+(x+100)+' '+y}
+    s+='<path d="'+p+' L800 600 L0 600Z" fill="'+c+'"/>'});
+  return uri(s+'</svg>')}
+function city(seed,a,b,bcols,win){
+  var r=rng(seed),s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">'+sky('g',a,b),x=0;
+  while(x<800){var w=40+r()*70,h=120+r()*320;
+    s+='<rect x="'+x+'" y="'+(600-h)+'" width="'+w+'" height="'+h+'" fill="'+bcols[Math.floor(r()*bcols.length)]+'"/>';
+    for(var yy=600-h+14;yy<590;yy+=22)for(var xx=x+8;xx<x+w-10;xx+=16)if(r()>.55)s+='<rect x="'+xx+'" y="'+yy+'" width="7" height="10" fill="'+win+'" opacity=".85"/>';
+    x+=w+2}
+  return uri(s+'</svg>')}
+function abstract(seed,bg,cols,n){
+  var r=rng(seed),s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="'+bg+'"/>';
+  for(var i=0;i<n;i++){var c=cols[i%cols.length],x=r()*800,y=r()*600,k=30+r()*130;
+    s+=i%3==0?'<circle cx="'+x+'" cy="'+y+'" r="'+k+'" fill="'+c+'" opacity=".8"/>':i%3==1?'<rect x="'+x+'" y="'+y+'" width="'+k*1.6+'" height="'+k*.7+'" rx="'+k/4+'" fill="'+c+'" opacity=".75" transform="rotate('+(r()*90-45)+' '+x+' '+y+')"/>':'<path d="M'+x+' '+y+' q'+k+' -'+k+' '+k*2+' 0" stroke="'+c+'" stroke-width="'+(6+r()*10)+'" fill="none" stroke-linecap="round"/>'}
+  return uri(s+'</svg>')}
+
+var DATA=[
+ {t:'Alpine dawn',c:'Landscapes',s:'tall',u:mountains(11,'#ffb88a','#fbe6c8','#fff3d6',['#8c6a8f','#5d4a7a','#33305a','#1c1b3a'])},
+ {t:'Quiet shore',c:'Landscapes',s:'wide',u:waves(5,'#bfe3f2','#f4f9fb',['#7cc0d9','#3f95b8','#256c94','#164a6e'])},
+ {t:'Neon district',c:'Cities',s:'',u:city(3,'#1b1040','#6a2a7e',['#1a1030','#251546','#321a5a'],'#ffd86b')},
+ {t:'Pink ridge',c:'Landscapes',s:'',u:mountains(23,'#ffd1dc','#fff1f4',"#ffffff",['#e7a0b5','#c4709a','#8f4a82'])},
+ {t:'Overlap study',c:'Abstract',s:'wide',u:abstract(7,'#f2ede4',['#e4572e','#2d4bd6','#f3a712','#1b998b'],14)},
+ {t:'Harbour lights',c:'Cities',s:'tall',u:city(9,'#0f2740','#2e5d83',['#0c1d30','#13304c','#1a3f61'],'#fff0a8')},
+ {t:'Teal tide',c:'Landscapes',s:'',u:waves(14,'#d7f2e8','#f6fffb',['#8fd9c1','#46b59b','#1f8a7a','#0f5f5a'])},
+ {t:'Marigold grid',c:'Abstract',s:'',u:abstract(19,'#1c1d22',['#f3a712','#ff6f59','#f7f3e8','#7adfbb'],12)},
+ {t:'Dusk avenue',c:'Cities',s:'wide',u:city(21,'#ff9a6b','#ffd9a0',['#4a2f52','#5c3a64','#3a2442'],'#fff3c4')},
+ {t:'Storm peaks',c:'Landscapes',s:'tall',u:mountains(31,'#3b4763','#8a93a8','#e8ecf5',['#6a7590','#454e68','#272d42','#141829'])},
+ {t:'Ink and arcs',c:'Abstract',s:'tall',u:abstract(41,'#e8efff',['#2d4bd6','#1c1d22','#ff6f59','#8ea2ff'],16)},
+ {t:'Midnight blocks',c:'Cities',s:'',u:city(55,'#0b0f24','#1b2250',['#10163a','#171f4d','#0a0e22'],'#7dd3ff')}
+];
+
+var grid=document.getElementById('grid'),bar=document.getElementById('bar'),lb=document.getElementById('lb'),
+big=document.getElementById('big'),cap=document.getElementById('cap'),num=document.getElementById('num');
+var cats=['All'].concat(DATA.map(function(d){return d.c}).filter(function(c,i,a){return a.indexOf(c)===i}));
+var current='All',view=[],idx=0,lastFocus=null;
+
+DATA.forEach(function(d,i){
+  var b=document.createElement('button');b.className='item '+d.s;b.dataset.i=i;b.setAttribute('aria-label','Open '+d.t);
+  b.innerHTML='<img loading="lazy" alt="'+d.t+', '+d.c.toLowerCase()+' artwork" src="'+d.u+'"><span class="cap"><b>'+d.t+'</b><small>'+d.c+'</small></span>';
+  b.addEventListener('click',function(){open(i)});grid.appendChild(b);d.el=b});
+
+var cnt=document.createElement('span');cnt.className='count';
+cats.forEach(function(c){var b=document.createElement('button');b.className='chip';b.textContent=c;
+  b.setAttribute('aria-pressed',c==='All');b.addEventListener('click',function(){filter(c)});bar.appendChild(b)});
+bar.appendChild(cnt);
+
+function filter(c){
+  current=c;
+  Array.prototype.forEach.call(bar.querySelectorAll('.chip'),function(b){b.setAttribute('aria-pressed',b.textContent===c)});
+  DATA.forEach(function(d){
+    var show=c==='All'||d.c===c;
+    if(show){d.el.classList.remove('gone');requestAnimationFrame(function(){d.el.classList.remove('hide')})}
+    else{d.el.classList.add('hide');setTimeout(function(){if(d.el.classList.contains('hide'))d.el.classList.add('gone')},350)}
+  });
+  view=DATA.map(function(d,i){return i}).filter(function(i){return c==='All'||DATA[i].c===c});
+  cnt.textContent=view.length+' images';
+}
+function show(n,animate){
+  idx=(n+view.length)%view.length;var d=DATA[view[idx]];
+  function apply(){big.src=d.u;big.alt=d.t+', '+d.c.toLowerCase()+' artwork';
+    cap.innerHTML=d.t+'<small>'+d.c+'</small>';num.textContent=(idx+1)+' / '+view.length;big.classList.remove('swap')}
+  if(animate){big.classList.add('swap');setTimeout(apply,200)}else apply();
+}
+function open(i){lastFocus=document.activeElement;idx=view.indexOf(i);show(idx,false);
+  lb.classList.add('open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';document.getElementById('x').focus()}
+function close(){lb.classList.remove('open');lb.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus)lastFocus.focus()}
+document.getElementById('x').onclick=close;
+document.getElementById('prev').onclick=function(){show(idx-1,true)};
+document.getElementById('next').onclick=function(){show(idx+1,true)};
+lb.addEventListener('click',function(e){if(e.target===lb)close()});
+document.addEventListener('keydown',function(e){
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')close();else if(e.key==='ArrowLeft')show(idx-1,true);else if(e.key==='ArrowRight')show(idx+1,true);
+});
+var sx=null;
+lb.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
+lb.addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;
+  if(Math.abs(dx)>50)show(idx+(dx<0?1:-1),true);sx=null});
+filter('All');
+</script>
+</body>
+</html>
